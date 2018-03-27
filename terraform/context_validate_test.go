@@ -88,7 +88,7 @@ func TestContext2Validate_computedVar(t *testing.T) {
 		),
 	})
 
-	p.ValidateFn = func(c *ResourceConfig) ([]string, []error) {
+	p.ValidateFn = func(c *ResourceConfig) (warns []string, errs []error) {
 		if !c.IsComputed("value") {
 			return nil, []error{fmt.Errorf("value isn't computed")}
 		}
@@ -303,7 +303,7 @@ func TestContext2Validate_moduleProviderInheritOrphan(t *testing.T) {
 		},
 	})
 
-	p.ValidateFn = func(c *ResourceConfig) ([]string, []error) {
+	p.ValidateFn = func(c *ResourceConfig) (warns []string, errs []error) {
 		v, ok := c.Get("set")
 		if !ok {
 			return nil, []error{fmt.Errorf("not set")}
@@ -336,7 +336,7 @@ func TestContext2Validate_moduleProviderVar(t *testing.T) {
 		},
 	})
 
-	p.ValidateFn = func(c *ResourceConfig) ([]string, []error) {
+	p.ValidateFn = func(c *ResourceConfig) (warns []string, errs []error) {
 		return nil, c.CheckSet([]string{"foo"})
 	}
 
@@ -358,7 +358,7 @@ func TestContext2Validate_moduleProviderInheritUnused(t *testing.T) {
 		),
 	})
 
-	p.ValidateFn = func(c *ResourceConfig) ([]string, []error) {
+	p.ValidateFn = func(c *ResourceConfig) (warns []string, errs []error) {
 		return nil, c.CheckSet([]string{"foo"})
 	}
 
@@ -397,7 +397,7 @@ func TestContext2Validate_orphans(t *testing.T) {
 	})
 
 	p.ValidateResourceFn = func(
-		t string, c *ResourceConfig) ([]string, []error) {
+		t string, c *ResourceConfig) (warns []string, errs []error) {
 		return nil, c.CheckSet([]string{"foo"})
 	}
 
@@ -496,7 +496,7 @@ func TestContext2Validate_provisionerConfig_good(t *testing.T) {
 	m := testModule(t, "validate-bad-prov-conf")
 	p := testProvider("aws")
 	pr := testProvisioner()
-	pr.ValidateFn = func(c *ResourceConfig) ([]string, []error) {
+	pr.ValidateFn = func(c *ResourceConfig) (warns []string, errs []error) {
 		if c == nil {
 			t.Fatalf("missing resource config for provisioner")
 		}
@@ -678,7 +678,7 @@ func TestContext2Validate_tainted(t *testing.T) {
 	})
 
 	p.ValidateResourceFn = func(
-		t string, c *ResourceConfig) ([]string, []error) {
+		t string, c *ResourceConfig) (warns []string, errs []error) {
 		return nil, c.CheckSet([]string{"foo"})
 	}
 
@@ -741,7 +741,7 @@ func TestContext2Validate_varRefFilled(t *testing.T) {
 	})
 
 	var value interface{}
-	p.ValidateResourceFn = func(t string, c *ResourceConfig) ([]string, []error) {
+	p.ValidateResourceFn = func(t string, c *ResourceConfig) (warns []string, errs []error) {
 		value, _ = c.Get("foo")
 		return nil, nil
 	}

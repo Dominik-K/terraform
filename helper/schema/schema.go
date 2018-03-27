@@ -248,7 +248,7 @@ type SchemaStateFunc func(interface{}) string
 
 // SchemaValidateFunc is a function used to validate a single field in the
 // schema.
-type SchemaValidateFunc func(interface{}, string) ([]string, []error)
+type SchemaValidateFunc func(value interface{}, key string) (warnings []string, errors []error)
 
 func (s *Schema) GoString() string {
 	return fmt.Sprintf("*%#v", *s)
@@ -603,7 +603,7 @@ func (m schemaMap) Input(
 }
 
 // Validate validates the configuration against this schema mapping.
-func (m schemaMap) Validate(c *terraform.ResourceConfig) ([]string, []error) {
+func (m schemaMap) Validate(c *terraform.ResourceConfig) (warns []string, errs []error) {
 	return m.validateObject("", m, c)
 }
 
@@ -1223,7 +1223,7 @@ func (m schemaMap) inputString(
 func (m schemaMap) validate(
 	k string,
 	schema *Schema,
-	c *terraform.ResourceConfig) ([]string, []error) {
+	c *terraform.ResourceConfig) (warns []string, errs []error) {
 	raw, ok := c.Get(k)
 	if !ok && schema.DefaultFunc != nil {
 		// We have a dynamic default. Check if we have a value.
@@ -1283,7 +1283,7 @@ func (m schemaMap) validateList(
 	k string,
 	raw interface{},
 	schema *Schema,
-	c *terraform.ResourceConfig) ([]string, []error) {
+	c *terraform.ResourceConfig) (warns []string, errs []error) {
 	// We use reflection to verify the slice because you can't
 	// case to []interface{} unless the slice is exactly that type.
 	rawV := reflect.ValueOf(raw)
@@ -1354,7 +1354,7 @@ func (m schemaMap) validateMap(
 	k string,
 	raw interface{},
 	schema *Schema,
-	c *terraform.ResourceConfig) ([]string, []error) {
+	c *terraform.ResourceConfig) (warns []string, errs []error) {
 	// We use reflection to verify the slice because you can't
 	// case to []interface{} unless the slice is exactly that type.
 	rawV := reflect.ValueOf(raw)
@@ -1418,7 +1418,7 @@ func (m schemaMap) validateMap(
 	return nil, nil
 }
 
-func validateMapValues(k string, m map[string]interface{}, schema *Schema) ([]string, []error) {
+func validateMapValues(k string, m map[string]interface{}, schema *Schema) (warns []string, errs []error) {
 	for key, raw := range m {
 		valueType, err := getValueType(k, schema)
 		if err != nil {
@@ -1479,7 +1479,7 @@ func getValueType(k string, schema *Schema) (ValueType, error) {
 func (m schemaMap) validateObject(
 	k string,
 	schema map[string]*Schema,
-	c *terraform.ResourceConfig) ([]string, []error) {
+	c *terraform.ResourceConfig) (warns []string, errs []error) {
 	raw, _ := c.Get(k)
 	if _, ok := raw.(map[string]interface{}); !ok && !c.IsComputed(k) {
 		return nil, []error{fmt.Errorf(
@@ -1524,7 +1524,7 @@ func (m schemaMap) validatePrimitive(
 	k string,
 	raw interface{},
 	schema *Schema,
-	c *terraform.ResourceConfig) ([]string, []error) {
+	c *terraform.ResourceConfig) (warns []string, errs []error) {
 	// Catch if the user gave a complex type where a primitive was
 	// expected, so we can return a friendly error message that
 	// doesn't contain Go type system terminology.
@@ -1591,7 +1591,7 @@ func (m schemaMap) validateType(
 	k string,
 	raw interface{},
 	schema *Schema,
-	c *terraform.ResourceConfig) ([]string, []error) {
+	c *terraform.ResourceConfig) (warns []string, errs []error) {
 	var ws []string
 	var es []error
 	switch schema.Type {

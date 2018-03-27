@@ -14,7 +14,7 @@ type ResourceProvisioner interface {
 	// are valid since it is possible they have to be interpolated still.
 	// The primary use case of this call is to check that the required keys
 	// are set and that the general structure is correct.
-	Validate(*ResourceConfig) ([]string, []error)
+	Validate(*ResourceConfig) (warns []string, errs []error)
 
 	// Apply runs the provisioner on a specific resource and returns the new
 	// resource state along with an error. Instead of a diff, the ResourceConfig

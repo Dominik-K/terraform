@@ -48,7 +48,7 @@ func (b *Backend) Input(
 	return schemaMap(b.Schema).Input(input, c)
 }
 
-func (b *Backend) Validate(c *terraform.ResourceConfig) ([]string, []error) {
+func (b *Backend) Validate(c *terraform.ResourceConfig) (warns []string, errs []error) {
 	if b == nil {
 		return nil, nil
 	}

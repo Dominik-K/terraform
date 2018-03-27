@@ -14,7 +14,7 @@ type Map struct {
 }
 
 func (m *Map) Validate(
-	t string, c *terraform.ResourceConfig) ([]string, []error) {
+	t string, c *terraform.ResourceConfig) (warns []string, errs []error) {
 	r, ok := m.Mapping[t]
 	if !ok {
 		return nil, []error{fmt.Errorf("Unknown resource type: %s", t)}

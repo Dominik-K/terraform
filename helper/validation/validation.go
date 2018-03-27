@@ -111,7 +111,7 @@ func StringLenBetween(min, max int) schema.SchemaValidateFunc {
 // matches a given regexp. Optionally an error message can be provided to
 // return something friendlier than "must match some globby regexp".
 func StringMatch(r *regexp.Regexp, message string) schema.SchemaValidateFunc {
-	return func(i interface{}, k string) ([]string, []error) {
+	return func(i interface{}, k string) (warns []string, errs []error) {
 		v, ok := i.(string)
 		if !ok {
 			return nil, []error{fmt.Errorf("expected type of %s to be string", k)}

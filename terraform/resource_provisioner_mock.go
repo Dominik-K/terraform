@@ -18,7 +18,7 @@ type MockResourceProvisioner struct {
 
 	ValidateCalled       bool
 	ValidateConfig       *ResourceConfig
-	ValidateFn           func(c *ResourceConfig) ([]string, []error)
+	ValidateFn           func(c *ResourceConfig) (warns []string, errs []error)
 	ValidateReturnWarns  []string
 	ValidateReturnErrors []error
 
@@ -27,7 +27,7 @@ type MockResourceProvisioner struct {
 	StopReturnError error
 }
 
-func (p *MockResourceProvisioner) Validate(c *ResourceConfig) ([]string, []error) {
+func (p *MockResourceProvisioner) Validate(c *ResourceConfig) (warns []string, errs []error) {
 	p.Lock()
 	defer p.Unlock()
 

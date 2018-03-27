@@ -28,7 +28,7 @@ type ResourceProvisioner struct {
 	Client *rpc.Client
 }
 
-func (p *ResourceProvisioner) Validate(c *terraform.ResourceConfig) ([]string, []error) {
+func (p *ResourceProvisioner) Validate(c *terraform.ResourceConfig) (warns []string, errs []error) {
 	var resp ResourceProvisionerValidateResponse
 	args := ResourceProvisionerValidateArgs{
 		Config: c,
@@ -39,7 +39,6 @@ func (p *ResourceProvisioner) Validate(c *terraform.ResourceConfig) ([]string, [
 		return nil, []error{err}
 	}
 
-	var errs []error
 	if len(resp.Errors) > 0 {
 		errs = make([]error, len(resp.Errors))
 		for i, err := range resp.Errors {

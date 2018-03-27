@@ -69,16 +69,16 @@ type MockResourceProvider struct {
 	DataSourcesReturn              []DataSource
 	ValidateCalled                 bool
 	ValidateConfig                 *ResourceConfig
-	ValidateFn                     func(*ResourceConfig) ([]string, []error)
+	ValidateFn                     func(*ResourceConfig) (warns []string, errs []error)
 	ValidateReturnWarns            []string
 	ValidateReturnErrors           []error
-	ValidateResourceFn             func(string, *ResourceConfig) ([]string, []error)
+	ValidateResourceFn             func(string, *ResourceConfig) (warns []string, errs []error)
 	ValidateResourceCalled         bool
 	ValidateResourceType           string
 	ValidateResourceConfig         *ResourceConfig
 	ValidateResourceReturnWarns    []string
 	ValidateResourceReturnErrors   []error
-	ValidateDataSourceFn           func(string, *ResourceConfig) ([]string, []error)
+	ValidateDataSourceFn           func(string, *ResourceConfig) (warns []string, errs []error)
 	ValidateDataSourceCalled       bool
 	ValidateDataSourceType         string
 	ValidateDataSourceConfig       *ResourceConfig
@@ -120,7 +120,7 @@ func (p *MockResourceProvider) Input(
 	return p.InputReturnConfig, p.InputReturnError
 }
 
-func (p *MockResourceProvider) Validate(c *ResourceConfig) ([]string, []error) {
+func (p *MockResourceProvider) Validate(c *ResourceConfig) (warns []string, errs []error) {
 	p.Lock()
 	defer p.Unlock()
 
@@ -132,7 +132,7 @@ func (p *MockResourceProvider) Validate(c *ResourceConfig) ([]string, []error) {
 	return p.ValidateReturnWarns, p.ValidateReturnErrors
 }
 
-func (p *MockResourceProvider) ValidateResource(t string, c *ResourceConfig) ([]string, []error) {
+func (p *MockResourceProvider) ValidateResource(t string, c *ResourceConfig) (warns []string, errs []error) {
 	p.Lock()
 	defer p.Unlock()
 
@@ -258,7 +258,7 @@ func (p *MockResourceProvider) ImportState(info *InstanceInfo, id string) ([]*In
 	return result, p.ImportStateReturnError
 }
 
-func (p *MockResourceProvider) ValidateDataSource(t string, c *ResourceConfig) ([]string, []error) {
+func (p *MockResourceProvider) ValidateDataSource(t string, c *ResourceConfig) (warns []string, errs []error) {
 	p.Lock()
 	defer p.Unlock()
 

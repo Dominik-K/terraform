@@ -43,7 +43,7 @@ type Provisioner struct {
 
 	// ValidateFunc is a function for extended validation. This is optional
 	// and should be used when individual field validation is not enough.
-	ValidateFunc func(*terraform.ResourceConfig) ([]string, []error)
+	ValidateFunc func(*terraform.ResourceConfig) (warns []string, errs []error)
 
 	stopCtx       context.Context
 	stopCtxCancel context.CancelFunc

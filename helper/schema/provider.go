@@ -217,7 +217,7 @@ func (p *Provider) Input(
 }
 
 // Validate implementation of terraform.ResourceProvider interface.
-func (p *Provider) Validate(c *terraform.ResourceConfig) ([]string, []error) {
+func (p *Provider) Validate(c *terraform.ResourceConfig) (warns []string, errs []error) {
 	if err := p.InternalValidate(); err != nil {
 		return nil, []error{fmt.Errorf(
 			"Internal validation of the provider failed! This is always a bug\n"+
@@ -230,7 +230,7 @@ func (p *Provider) Validate(c *terraform.ResourceConfig) ([]string, []error) {
 
 // ValidateResource implementation of terraform.ResourceProvider interface.
 func (p *Provider) ValidateResource(
-	t string, c *terraform.ResourceConfig) ([]string, []error) {
+	t string, c *terraform.ResourceConfig) (warns []string, errs []error) {
 	r, ok := p.ResourcesMap[t]
 	if !ok {
 		return nil, []error{fmt.Errorf(
@@ -390,7 +390,7 @@ func (p *Provider) ImportState(
 
 // ValidateDataSource implementation of terraform.ResourceProvider interface.
 func (p *Provider) ValidateDataSource(
-	t string, c *terraform.ResourceConfig) ([]string, []error) {
+	t string, c *terraform.ResourceConfig) (warns []string, errs []error) {
 	r, ok := p.DataSourcesMap[t]
 	if !ok {
 		return nil, []error{fmt.Errorf(

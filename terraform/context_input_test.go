@@ -126,7 +126,7 @@ func TestContext2Input_provider(t *testing.T) {
 		actual = c.Config["foo"]
 		return nil
 	}
-	p.ValidateFn = func(c *ResourceConfig) ([]string, []error) {
+	p.ValidateFn = func(c *ResourceConfig) (warns []string, errs []error) {
 		return nil, c.CheckSet([]string{"foo"})
 	}
 
@@ -173,7 +173,7 @@ func TestContext2Input_providerMulti(t *testing.T) {
 		actual = append(actual, c.Config["foo"])
 		return nil
 	}
-	p.ValidateFn = func(c *ResourceConfig) ([]string, []error) {
+	p.ValidateFn = func(c *ResourceConfig) (warns []string, errs []error) {
 		return nil, c.CheckSet([]string{"foo"})
 	}
 

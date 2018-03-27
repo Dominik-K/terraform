@@ -38,7 +38,7 @@ type Validator struct {
 }
 
 func (v *Validator) Validate(
-	c *terraform.ResourceConfig) (ws []string, es []error) {
+	c *terraform.ResourceConfig) (warns []string, errs []error) {
 	// Flatten the configuration so it is easier to reason about
 	flat := flatmap.Flatten(c.Raw)
 
@@ -48,7 +48,7 @@ func (v *Validator) Validate(
 		for _, k := range vs {
 			vk, err := newValidatorKey(k, req)
 			if err != nil {
-				es = append(es, err)
+				errs = append(errs, err)
 				continue
 			}
 
@@ -60,10 +60,10 @@ func (v *Validator) Validate(
 	for _, kv := range keySet {
 		p, w, e := kv.Validate(flat)
 		if len(w) > 0 {
-			ws = append(ws, w...)
+			warns = append(warns, w...)
 		}
 		if len(e) > 0 {
-			es = append(es, e...)
+			errs = append(errs, e...)
 		}
 
 		purged = append(purged, p...)
@@ -77,16 +77,16 @@ func (v *Validator) Validate(
 
 	// The rest are unknown
 	for k, _ := range flat {
-		es = append(es, fmt.Errorf("Unknown configuration: %s", k))
+		errs = append(errs, fmt.Errorf("Unknown configuration: %s", k))
 	}
 
 	return
 }
 
 type validatorKey interface {
-	// Validate validates the given configuration and returns viewed keys,
+	// Validate validates the given configuration and returns matching keys,
 	// warnings, and errors.
-	Validate(map[string]string) ([]string, []string, []error)
+	Validate(map[string]string) (keysMatching []string, warns []string, errs []error)
 }
 
 func newValidatorKey(k string, req bool) (validatorKey, error) {
@@ -115,7 +115,7 @@ type basicValidatorKey struct {
 }
 
 func (v *basicValidatorKey) Validate(
-	m map[string]string) ([]string, []string, []error) {
+	m map[string]string) (keysMatching []string, warns []string, errs []error) {
 	for k, _ := range m {
 		// If we have the exact key its a match
 		if k == v.Key {
@@ -139,7 +139,7 @@ type nestedValidatorKey struct {
 func (v *nestedValidatorKey) validate(
 	m map[string]string,
 	prefix string,
-	offset int) ([]string, []string, []error) {
+	offset int) (keysMatching []string, warns []string, errs []error) {
 	if offset >= len(v.Parts) {
 		// We're at the end. Look for a specific key.
 		v2 := &basicValidatorKey{Key: prefix, Required: v.Required}
@@ -209,6 +209,6 @@ func (v *nestedValidatorKey) validate(
 }
 
 func (v *nestedValidatorKey) Validate(
-	m map[string]string) ([]string, []string, []error) {
+	m map[string]string) (keysMatching []string, warns []string, errs []error) {
 	return v.validate(m, "", 0)
 }

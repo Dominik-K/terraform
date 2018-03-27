@@ -85,7 +85,7 @@ func (p *ResourceProvider) Input(
 	return resp.Config, nil
 }
 
-func (p *ResourceProvider) Validate(c *terraform.ResourceConfig) ([]string, []error) {
+func (p *ResourceProvider) Validate(c *terraform.ResourceConfig) (warns []string, errs []error) {
 	var resp ResourceProviderValidateResponse
 	args := ResourceProviderValidateArgs{
 		Config: c,
@@ -96,7 +96,6 @@ func (p *ResourceProvider) Validate(c *terraform.ResourceConfig) ([]string, []er
 		return nil, []error{err}
 	}
 
-	var errs []error
 	if len(resp.Errors) > 0 {
 		errs = make([]error, len(resp.Errors))
 		for i, err := range resp.Errors {
@@ -108,7 +107,7 @@ func (p *ResourceProvider) Validate(c *terraform.ResourceConfig) ([]string, []er
 }
 
 func (p *ResourceProvider) ValidateResource(
-	t string, c *terraform.ResourceConfig) ([]string, []error) {
+	t string, c *terraform.ResourceConfig) (warns []string, errs []error) {
 	var resp ResourceProviderValidateResourceResponse
 	args := ResourceProviderValidateResourceArgs{
 		Config: c,
@@ -120,7 +119,6 @@ func (p *ResourceProvider) ValidateResource(
 		return nil, []error{err}
 	}
 
-	var errs []error
 	if len(resp.Errors) > 0 {
 		errs = make([]error, len(resp.Errors))
 		for i, err := range resp.Errors {
@@ -188,7 +186,7 @@ func (p *ResourceProvider) Diff(
 }
 
 func (p *ResourceProvider) ValidateDataSource(
-	t string, c *terraform.ResourceConfig) ([]string, []error) {
+	t string, c *terraform.ResourceConfig) (warns []string, errs []error) {
 	var resp ResourceProviderValidateResourceResponse
 	args := ResourceProviderValidateResourceArgs{
 		Config: c,
@@ -200,7 +198,6 @@ func (p *ResourceProvider) ValidateDataSource(
 		return nil, []error{err}
 	}
 
-	var errs []error
 	if len(resp.Errors) > 0 {
 		errs = make([]error, len(resp.Errors))
 		for i, err := range resp.Errors {
